@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JFileChooser;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
 import javax.imageio.ImageIO;
@@ -42,6 +43,8 @@ public class JImgRecogUI {
 	private JTextField xField;
 	private JTextField yField;
 	private JTextField heightField;
+	private final Action action_1 = new SwingAction_2();
+	private JButton btnSave = new JButton("Save");
 	
 	/**
 	 * Launch the application.
@@ -87,7 +90,10 @@ public class JImgRecogUI {
 		
 		lblError.setEnabled(false);
 		
+		btnSave.setAction(action_1);
 		
+		btnSave.setEnabled(false);
+
 		btnAddBlue.setEnabled(false);
 		
 		xField = new JTextField();
@@ -104,6 +110,7 @@ public class JImgRecogUI {
 		JLabel lblStartY = new JLabel("Start Y");
 		
 		JLabel lblHeight = new JLabel("Height");
+		
 	
 		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
@@ -112,15 +119,14 @@ public class JImgRecogUI {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(lblNewLabel)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(textField, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE))
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(btnOpenFile)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(btnAddBlue)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(lblNewLabel)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(textField, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(btnOpenFile)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnAddBlue))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblStartX)
@@ -130,12 +136,13 @@ public class JImgRecogUI {
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(xField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(yField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(heightField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+								.addComponent(heightField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 74, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblError, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(77, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -163,7 +170,9 @@ public class JImgRecogUI {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 								.addComponent(heightField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblHeight))))
+								.addComponent(lblHeight))
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnSave)))
 					.addContainerGap(12, Short.MAX_VALUE))
 		);
 		panel.setBackground(Color.WHITE);
@@ -254,7 +263,8 @@ public class JImgRecogUI {
 					}
 				}
 			}
-			panel.setIcon(new ImageIcon(image));		
+			panel.setIcon(new ImageIcon(image));	
+			btnSave.setEnabled(true);
 			}
 			else{
 				
@@ -306,5 +316,30 @@ public class JImgRecogUI {
 	    boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
 	    WritableRaster raster = startImage.copyData(startImage.getRaster().createCompatibleWritableRaster());
 	    return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+	}
+	private class SwingAction_2 extends AbstractAction {
+		public SwingAction_2() {
+			putValue(NAME, "Save");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+		}
+		public void actionPerformed(ActionEvent e) {
+			try {
+				JFileChooser fileChooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG (*.jpg)", "jpg");
+				fileChooser.addChoosableFileFilter(filter);
+				fileChooser.setFileFilter(filter);
+				int result = fileChooser.showSaveDialog(dialog);
+				
+				if (result == JFileChooser.APPROVE_OPTION) {
+					String path = fileChooser.getCurrentDirectory().getAbsolutePath();
+					String fileName = fileChooser.getSelectedFile().getName();
+					File outputfile = new File(path + "/" + fileName + ".jpg");
+					ImageIO.write(image, "jpg", outputfile);
+				}
+			}catch (Exception f) {
+			f.printStackTrace();
+		}
+			
+		}
 	}
 }
