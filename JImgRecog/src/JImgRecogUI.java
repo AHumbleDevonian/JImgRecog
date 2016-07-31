@@ -21,25 +21,25 @@ import javax.swing.Action;
 
 public class JImgRecogUI {
 
-	private JFrame frame;
-	private JFrame dialog;
-	private JTextField textField;
-	private final Action action = new openAction();
-	private File inputFile;
-	private JLabel panel = new JLabel();
-	private JLabel lblError = new JLabel();	
-	private final Action action1 = new addBlueAction();
-	private JButton btnAddBlue = new JButton("Add Blue");
-	private BufferedImage originalImage;
-	private BufferedImage image;
 	private int startx = 100;
 	private int starty = 0;
 	private int heightT = 10;
+	private File inputFile;
+	private BufferedImage originalImage;
+	private BufferedImage image;	
+	private JFrame frame;
+	private JFrame dialog;
+	private JLabel panel = new JLabel();
+	private JLabel lblError = new JLabel();	
+	private JTextField textField;
 	private JTextField xField;
 	private JTextField yField;
 	private JTextField heightField;
-	private final Action action_1 = new saveAction();
+	private JButton btnAddBlue = new JButton("Add Blue");
 	private JButton btnSave = new JButton("Save");
+	private final Action action = new openAction();
+	private final Action action1 = new addBlueAction();
+	private final Action action_1 = new saveAction();
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -62,31 +62,36 @@ public class JImgRecogUI {
 		JImgRecog test = new JImgRecog();
 		test.XORTest();
 		
-		frame = new JFrame();
-		frame.setBounds(100, 100, 412, 239);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
-		textField = new JTextField();
-		textField.setToolTipText("File Name");
-		textField.setEditable(false);
-		textField.setColumns(10);
-		
 		JLabel lblNewLabel = new JLabel("FileName: ");		
+		JLabel lblStartX = new JLabel("Start X");		
+		JLabel lblStartY = new JLabel("Start Y");		
+		JLabel lblHeight = new JLabel("Height");
 		JButton btnOpenFile = new JButton("Open File");
-		btnOpenFile.setAction(action);
-		btnAddBlue.setAction(action1);		
-		lblError.setEnabled(false);		
-		btnSave.setAction(action_1);		
-		btnSave.setEnabled(false);
-		btnAddBlue.setEnabled(false);		
+		
 		xField = new JTextField();
 		xField.setColumns(10);		
 		yField = new JTextField();
 		yField.setColumns(10);		
 		heightField = new JTextField();
-		heightField.setColumns(10);		
-		JLabel lblStartX = new JLabel("Start X");		
-		JLabel lblStartY = new JLabel("Start Y");		
-		JLabel lblHeight = new JLabel("Height");	
+		heightField.setColumns(10);	
+		
+		frame = new JFrame();
+		frame.setBounds(100, 100, 412, 239);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
+		
+		textField = new JTextField();
+		textField.setToolTipText("File Name");
+		textField.setEditable(false);
+		textField.setColumns(10);		
+
+		btnOpenFile.setAction(action);
+		btnAddBlue.setAction(action1);	
+		btnSave.setAction(action_1);		
+		
+		lblError.setEnabled(false);		
+		btnSave.setEnabled(false);
+		btnAddBlue.setEnabled(false);		
+		
 		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -162,15 +167,19 @@ public class JImgRecogUI {
 			try {
 				JFileChooser fileChooser = new JFileChooser();
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg", "gif");
+				
 				fileChooser.setFileFilter(filter);
 				int result = fileChooser.showOpenDialog(dialog);
+				
 				if (result == JFileChooser.APPROVE_OPTION) {
 					inputFile = fileChooser.getSelectedFile();
 					textField.setText(inputFile.getName());
 					image = ImageIO.read(inputFile);
 					originalImage = cloneImage(image);
+					
 				    int width = image.getWidth();
-				    int height = image.getHeight();				      
+				    int height = image.getHeight();	
+				    
 				    if(width <= 150 && height <= 150){
 				    	lblError.setEnabled(false);
 				    	lblError.setText("");
@@ -183,6 +192,7 @@ public class JImgRecogUI {
 				    			result2[row][col] = new Color(image.getRGB(col, row));		            
 				    		}
 				    	}	
+				    	
 				    	xField.setText(String.valueOf(startx));
 				    	yField.setText(String.valueOf(starty));
 				    	heightField.setText(String.valueOf(heightT));
@@ -191,7 +201,9 @@ public class JImgRecogUI {
 				    	lblError.setEnabled(true);
 				    	lblError.setText("File is too large! Must be 150 x 150.");
 				    }
-				}else if (result == JFileChooser.CANCEL_OPTION) {
+				}
+				else if (result == JFileChooser.CANCEL_OPTION) {
+					//ToDo
 				}
 			} catch (Exception f) {
 				f.printStackTrace();
@@ -205,42 +217,43 @@ public class JImgRecogUI {
 		}
 		public void actionPerformed(ActionEvent e) {	
 			if(validFields() && validValues()){
-			image = cloneImage(originalImage);			
-			starty = Integer.valueOf(yField.getText());
-			startx = Integer.valueOf(xField.getText());
-			heightT = Integer.valueOf(heightField.getText());
+				
+				image = cloneImage(originalImage);			
+				starty = Integer.valueOf(yField.getText());
+				startx = Integer.valueOf(xField.getText());
+				heightT = Integer.valueOf(heightField.getText());
 			
-			for(int i = starty; i < (heightT + starty); i++){
-				int y = (i + 1);
-				int pixels = 0;
-				if(y % 2 == 0){
-					pixels = ((y - starty) - 1);
-				}
-				else{
-					pixels = (y - starty);
-				}
-				for(int j = 0; j < pixels; j++){
-					int x = 0; 
-					if(j == 0){
-						x = startx;
-					}
-					else if(j % 2 == 0)
-					{
-						x = (startx - (j / 2));
+				for(int i = starty; i < (heightT + starty); i++){
+					int y = (i + 1);
+					int pixels = 0;
+					if(y % 2 == 0){
+						pixels = ((y - starty) - 1);
 					}
 					else{
-						x = (startx + ((j + 1) / 2));
+						pixels = (y - starty);
 					}
-					if(x >= 0 && y >= 0 && x < 150 && y < 150){
-						image.setRGB(x, y, Color.blue.getRGB());
+					for(int j = 0; j < pixels; j++){
+						int x = 0; 
+						if(j == 0){
+							x = startx;
+						}
+						else if(j % 2 == 0)
+						{
+							x = (startx - (j / 2));
+						}
+						else{
+							x = (startx + ((j + 1) / 2));
+						}
+						if(x >= 0 && y >= 0 && x < 150 && y < 150){
+							image.setRGB(x, y, Color.blue.getRGB());
+						}
 					}
 				}
-			}
 			panel.setIcon(new ImageIcon(image));	
 			btnSave.setEnabled(true);
 			}
 			else{
-				
+				//ToDo
 			}
 		}
 	}
