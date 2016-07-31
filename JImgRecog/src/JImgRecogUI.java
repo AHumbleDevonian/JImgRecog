@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -9,7 +8,6 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JFileChooser;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
 import javax.imageio.ImageIO;
@@ -20,20 +18,17 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import javax.swing.Action;
-import javax.swing.JPanel;
-import java.awt.SystemColor;
-import java.awt.event.ActionListener;
 
 public class JImgRecogUI {
 
 	private JFrame frame;
 	private JFrame dialog;
 	private JTextField textField;
-	private final Action action = new SwingAction();
+	private final Action action = new openAction();
 	private File inputFile;
 	private JLabel panel = new JLabel();
 	private JLabel lblError = new JLabel();	
-	private final Action action1 = new SwingAction_1();
+	private final Action action1 = new addBlueAction();
 	private JButton btnAddBlue = new JButton("Add Blue");
 	private BufferedImage originalImage;
 	private BufferedImage image;
@@ -43,12 +38,9 @@ public class JImgRecogUI {
 	private JTextField xField;
 	private JTextField yField;
 	private JTextField heightField;
-	private final Action action_1 = new SwingAction_2();
+	private final Action action_1 = new saveAction();
 	private JButton btnSave = new JButton("Save");
-	
-	/**
-	 * Launch the application.
-	 */
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -62,56 +54,39 @@ public class JImgRecogUI {
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public JImgRecogUI() {
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
 	private void initialize() {
+		JImgRecog test = new JImgRecog();
+		test.XORTest();
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 412, 239);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
 		textField = new JTextField();
 		textField.setToolTipText("File Name");
 		textField.setEditable(false);
 		textField.setColumns(10);
 		
-		JLabel lblNewLabel = new JLabel("FileName: ");
-		
+		JLabel lblNewLabel = new JLabel("FileName: ");		
 		JButton btnOpenFile = new JButton("Open File");
 		btnOpenFile.setAction(action);
-		btnAddBlue.setAction(action1);
-		
-		lblError.setEnabled(false);
-		
-		btnSave.setAction(action_1);
-		
+		btnAddBlue.setAction(action1);		
+		lblError.setEnabled(false);		
+		btnSave.setAction(action_1);		
 		btnSave.setEnabled(false);
-
-		btnAddBlue.setEnabled(false);
-		
+		btnAddBlue.setEnabled(false);		
 		xField = new JTextField();
-		xField.setColumns(10);
-		
+		xField.setColumns(10);		
 		yField = new JTextField();
-		yField.setColumns(10);
-		
+		yField.setColumns(10);		
 		heightField = new JTextField();
-		heightField.setColumns(10);
-		
-		JLabel lblStartX = new JLabel("Start X");
-		
-		JLabel lblStartY = new JLabel("Start Y");
-		
-		JLabel lblHeight = new JLabel("Height");
-		
-	
+		heightField.setColumns(10);		
+		JLabel lblStartX = new JLabel("Start X");		
+		JLabel lblStartY = new JLabel("Start Y");		
+		JLabel lblHeight = new JLabel("Height");	
 		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -178,26 +153,24 @@ public class JImgRecogUI {
 		panel.setBackground(Color.WHITE);
 		frame.getContentPane().setLayout(groupLayout);
 	}
-	private class SwingAction extends AbstractAction {
-		public SwingAction() {
+	private class openAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+		public openAction() {
 			putValue(NAME, "Open File");
 		}
 		public void actionPerformed(ActionEvent e) {
 			try {
 				JFileChooser fileChooser = new JFileChooser();
-				FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				        "JPG & GIF Images", "jpg", "gif");
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg", "gif");
 				fileChooser.setFileFilter(filter);
 				int result = fileChooser.showOpenDialog(dialog);
 				if (result == JFileChooser.APPROVE_OPTION) {
 					inputFile = fileChooser.getSelectedFile();
 					textField.setText(inputFile.getName());
-
 					image = ImageIO.read(inputFile);
 					originalImage = cloneImage(image);
 				    int width = image.getWidth();
-				    int height = image.getHeight();
-				      
+				    int height = image.getHeight();				      
 				    if(width <= 150 && height <= 150){
 				    	lblError.setEnabled(false);
 				    	lblError.setText("");
@@ -225,10 +198,10 @@ public class JImgRecogUI {
 			}
 		}
 	}
-	private class SwingAction_1 extends AbstractAction {
-		public SwingAction_1() {
+	private class addBlueAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+		public addBlueAction() {
 			putValue(NAME, "Add Blue");
-			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
 		public void actionPerformed(ActionEvent e) {	
 			if(validFields() && validValues()){
@@ -317,10 +290,11 @@ public class JImgRecogUI {
 	    WritableRaster raster = startImage.copyData(startImage.getRaster().createCompatibleWritableRaster());
 	    return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
 	}
-	private class SwingAction_2 extends AbstractAction {
-		public SwingAction_2() {
+	
+	private class saveAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+		public saveAction() {
 			putValue(NAME, "Save");
-			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
 		public void actionPerformed(ActionEvent e) {
 			try {
